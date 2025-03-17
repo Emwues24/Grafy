@@ -1,0 +1,255 @@
+package org.example;
+import java.io.*;
+import java.util.*;
+
+class Graph {
+    private int[][] adjacencyMatrix;
+    private Map<Integer, List<Integer>> adjacencyList;
+    private int vertices;
+
+    public Graph(int vertices) {
+        this.vertices = vertices;
+        this.adjacencyMatrix = new int[vertices][vertices];
+        this.adjacencyList = new HashMap<>();
+        for (int i = 0; i < vertices; i++) {
+            adjacencyList.put(i, new ArrayList<>());
+        }
+    }
+//dodac sprawdzenie czy krawedz juz istnieje!!!
+    public void addEdge(int src, int dest) {
+        if (adjacencyMatrix[src][dest] == 0 && adjacencyMatrix[dest][src] == 0){
+            adjacencyMatrix[src][dest] = 1;
+            adjacencyMatrix[dest][src] = 1;
+            adjacencyList.get(src).add(dest);
+            adjacencyList.get(dest).add(src);
+        }
+    }
+
+    public void removeEdge(int src, int dest) {
+        adjacencyMatrix[src][dest] = 0;
+        adjacencyMatrix[dest][src] = 0;
+        adjacencyList.get(src).remove(Integer.valueOf(dest));
+        adjacencyList.get(dest).remove(Integer.valueOf(src));
+    }
+
+    public void addVertex() {
+        int[][] newAdjacencyMatrix = new int[vertices + 1][vertices + 1];
+        for (int i = 0; i < vertices; i++) {
+            for (int j = 0; j < vertices; j++) {
+                newAdjacencyMatrix[i][j] = adjacencyMatrix[i][j];
+            }
+        }
+        adjacencyMatrix = newAdjacencyMatrix;
+
+        adjacencyList.put(vertices, new ArrayList<>());
+        vertices++;
+    }
+
+    public void removeVertex(int vertex) {
+        int[][] newAdjacencyMatrix = new int[vertices - 1][vertices - 1];
+        for (int i = 0, newI = 0; i < vertices; i++) {
+            if (i == vertex) continue;
+            for (int j = 0, newJ = 0; j < vertices; j++) {
+                if (j == vertex) continue;
+                newAdjacencyMatrix[newI][newJ] = adjacencyMatrix[i][j];
+                newJ++;
+            }
+            newI++;
+        }
+        adjacencyMatrix = newAdjacencyMatrix;
+
+        adjacencyList.remove(vertex);
+
+        for (List<Integer> neighbors : adjacencyList.values()) {
+            neighbors.remove(Integer.valueOf(vertex));
+        }
+
+        vertices--;
+    }
+// przeszuakc tylko gorna czesc grafu"?
+    public void convertMatrixToList() {
+        for (int i = 0; i < vertices; i++) {
+            adjacencyList.get(i).clear();
+            for (int j = 0; j < vertices; j++) {
+                if (adjacencyMatrix[i][j] == 1) {
+                    adjacencyList.get(i).add(j);
+                }
+            }
+        }
+    }
+
+    public void convertListToMatrix() {
+        adjacencyMatrix = new int[vertices][vertices];
+        for (int i = 0; i < vertices; i++) {
+            for (int neighbor : adjacencyList.get(i)) {
+                adjacencyMatrix[i][neighbor] = 1;
+            }
+        }
+    }
+
+    public static Graph generateIntervalGraph(List<int[]> intervals) {
+        int n = intervals.size();
+        Graph graph = new Graph(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (intervalsOverlap(intervals.get(i), intervals.get(j))) {
+                    graph.addEdge(i, j);
+                }
+            }
+        }
+        return graph;
+    }
+
+    private static boolean intervalsOverlap(int[] interval1, int[] interval2) {
+        return interval1[0] <= interval2[1] && interval2[0] <= interval1[1];
+    }
+
+    public void saveIntervalsToFile(List<int[]> intervals, String filename) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (int[] interval : intervals) {
+            writer.write(interval[0] + "," + interval[1] + "\n");
+        }
+        writer.close();
+    }
+
+    public static List<int[]> loadIntervalsFromFile(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        List<int[]> intervals = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            intervals.add(new int[]{Integer.parseInt(parts[0]), Integer.parseInt(parts[1])});
+        }
+        reader.close();
+        return intervals;
+    }
+
+    public void saveToGraph6(String filename) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write(encodeGraph6());
+        writer.close();
+    }
+
+    public static Graph loadFromGraph6(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        String line = reader.readLine();
+        reader.close();
+        return decodeGraph6(line);
+    }
+
+    private String encodeGraph6() {
+        StringBuilder sb = new StringBuilder();
+        sb.append((char) (vertices + 63));
+        List<Integer> bits = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            for (int j = 0; j < i; j++) {
+                bits.add(adjacencyMatrix[i][j]);
+            }
+        }
+        while (bits.size() % 6 != 0) {
+            bits.add(0);
+        }
+        for (int i = 0; i < bits.size(); i += 6) {
+            int value = 0;
+            for (int j = 0; j < 6; j++) {
+                value = (value << 1) | bits.get(i + j);
+            }
+            sb.append((char) (value + 63));
+        }
+        return sb.toString();
+    }
+
+    private static Graph decodeGraph6(String graph6) {
+        int n = graph6.charAt(0) - 63;
+        Graph graph = new Graph(n);
+        List<Integer> bits = new ArrayList<>();
+        for (int i = 1; i < graph6.length(); i++) {
+            int value = graph6.charAt(i) - 63;
+            for (int j = 5; j >= 0; j--) {
+                bits.add((value >> j) & 1);
+            }
+        }
+        int index = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (bits.get(index++) == 1) {
+                    graph.addEdge(i, j);
+                }
+            }
+        }
+        return graph;
+    }
+
+    public void printAdjacencyList() {
+        for (int i = 0; i < vertices; i++) {
+            System.out.println(i + " -> " + adjacencyList.get(i));
+        }
+    }
+    public void printAdjacencyMatrix() {
+        for (int[] row : adjacencyMatrix) {
+            System.out.println(Arrays.toString(row));
+        }
+    }
+
+    //obliczanie anihilacji 3a
+    public int computeAnnihilationNumber() {
+        int[] degrees = new int[vertices];
+        for (int i = 0; i < vertices; i++) {
+            degrees[i] = adjacencyList.get(i).size();
+        }
+        Arrays.sort(degrees);
+
+        int sum = 0;
+        int a = 0;
+        for (int i = 0; i < vertices; i++) {
+            sum += degrees[i];
+            if (sum > getEdgeCount()) {
+                break;
+            }
+            a = i + 1;
+        }
+        return a;
+    }
+
+    //abc indeks 3c
+    public double computeABCIndex() {
+        double abcIndex = 0.0;
+        for (int u = 0; u < vertices; u++) {
+            for (int v : adjacencyList.get(u)) {
+                if (u < v) {
+                    double degU = adjacencyList.get(u).size();
+                    double degV = adjacencyList.get(v).size();
+                    abcIndex += Math.sqrt((degU + degV - 2) / (degU * degV));
+                }
+            }
+        }
+        return abcIndex;
+    }
+
+    private int getEdgeCount() {
+        int edges = 0;
+        for (int i = 0; i < vertices; i++) {
+            edges += adjacencyList.get(i).size();
+        }
+        return edges / 2;
+    }
+
+    //zliczanie cykli dl. 3
+    public static int count3Cycles(int[][] adjMatrix) {
+        int n = adjMatrix.length;
+        int count = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (adjMatrix[i][j] == 1) {
+                    for (int k = j + 1; k < n; k++) {
+                        if (adjMatrix[j][k] == 1 && adjMatrix[k][i] == 1) {
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+}
