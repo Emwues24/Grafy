@@ -15,7 +15,7 @@ class Graph {
             adjacencyList.put(i, new ArrayList<>());
         }
     }
-//dodac sprawdzenie czy krawedz juz istnieje!!!
+
     public void addEdge(int src, int dest) {
         if (adjacencyMatrix[src][dest] == 0 && adjacencyMatrix[dest][src] == 0){
             adjacencyMatrix[src][dest] = 1;
@@ -66,7 +66,7 @@ class Graph {
 
         vertices--;
     }
-// przeszuakc tylko gorna czesc grafu"?
+
     public void convertMatrixToList() {
         for (int i = 0; i < vertices; i++) {
             adjacencyList.get(i).clear();
@@ -160,25 +160,46 @@ class Graph {
     }
 
     private static Graph decodeGraph6(String graph6) {
-        int n = graph6.charAt(0) - 63;
+        int index = 0;
+        int n;
+
+        if (graph6.charAt(0) == '~') {
+            // Jeśli pierwszy znak to '~', czytamy kolejne 3 bajty jako big-endian int
+            n = ((graph6.charAt(1) - 63) << 12) |
+                    ((graph6.charAt(2) - 63) << 6) |
+                    (graph6.charAt(3) - 63);
+            index = 4; // Kolejne dane zaczynają się od pozycji 4
+        } else {
+            // Standardowy przypadek, kiedy n <= 62
+            n = graph6.charAt(0) - 63;
+            index = 1;
+        }
+
         Graph graph = new Graph(n);
         List<Integer> bits = new ArrayList<>();
-        for (int i = 1; i < graph6.length(); i++) {
+
+        // Odczytywanie bitów z reszty znaków
+        for (int i = index; i < graph6.length(); i++) {
             int value = graph6.charAt(i) - 63;
             for (int j = 5; j >= 0; j--) {
                 bits.add((value >> j) & 1);
             }
         }
-        int index = 0;
+
+        // Odtwarzanie macierzy sąsiedztwa
+        int bitIndex = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < i; j++) {
-                if (bits.get(index++) == 1) {
+                if (bitIndex < bits.size() && bits.get(bitIndex) == 1) {
                     graph.addEdge(i, j);
                 }
+                bitIndex++;
             }
         }
+
         return graph;
     }
+
 
     public void printAdjacencyList() {
         for (int i = 0; i < vertices; i++) {
