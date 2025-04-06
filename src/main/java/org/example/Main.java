@@ -3,13 +3,24 @@ package org.example;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import static org.example.Graph.count3Cycles;
+import static org.example.Graph.*;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        Temat1();
+       // Temat1();
+
+        Graph g = loadFromGraph6("graphbig.txt");
+
+        Map<Integer, Integer> greedyColors = g.greedyColoring();
+        System.out.println("Greedy: " + greedyColors);
+        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
+
+        Map<Integer, Integer> lfColors = g.lfColoring();
+        System.out.println("LF: " + lfColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
     }
 
     public static void Temat1() throws IOException {

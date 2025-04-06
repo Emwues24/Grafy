@@ -273,4 +273,62 @@ class Graph {
         }
         return count;
     }
+
+
+    //temat2
+    // GREEDY – klasyczny algorytm kolorowania
+    public Map<Integer, Integer> greedyColoring() {
+        Map<Integer, Integer> result = new HashMap<>();
+        for (int i = 0; i < vertices; i++) {
+            Set<Integer> usedColors = new HashSet<>();
+            for (int neighbor : adjacencyList.get(i)) {
+                if (result.containsKey(neighbor)) {
+                    usedColors.add(result.get(neighbor));
+                }
+            }
+            int color = 0;
+            while (usedColors.contains(color)) {
+                color++;
+            }
+            result.put(i, color);
+        }
+        return result;
+    }
+
+    // LF – Largest First (wierzchołki o największym stopniu najpierw)
+    public Map<Integer, Integer> lfColoring() {
+        Map<Integer, Integer> result = new HashMap<>();
+        List<Integer> verticesOrder = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            verticesOrder.add(i);
+        }
+        verticesOrder.sort((a, b) -> Integer.compare(adjacencyList.get(b).size(), adjacencyList.get(a).size()));
+
+        for (int i : verticesOrder) {
+            Set<Integer> usedColors = new HashSet<>();
+            for (int neighbor : adjacencyList.get(i)) {
+                if (result.containsKey(neighbor)) {
+                    usedColors.add(result.get(neighbor));
+                }
+            }
+            int color = 0;
+            while (usedColors.contains(color)) {
+                color++;
+            }
+            result.put(i, color);
+        }
+        return result;
+    }
+
+    //ilosc kolorów
+    public static int getMaxColor(Map<Integer, Integer> coloring) {
+        int maxColor = -1;
+        for (int color : coloring.values()) {
+            if (color > maxColor) {
+                maxColor = color;
+            }
+        }
+        return maxColor;
+    }
+
 }
