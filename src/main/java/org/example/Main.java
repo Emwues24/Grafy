@@ -21,6 +21,10 @@ public class Main {
         Map<Integer, Integer> lfColors = g.lfColoring();
         System.out.println("LF: " + lfColors);
         System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        Map<Integer, Integer> slowColors = g.slowColoring();
+        System.out.println("SLow: " + lfColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
     }
 
     public static void Temat1() throws IOException {

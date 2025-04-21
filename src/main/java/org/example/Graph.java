@@ -67,6 +67,17 @@ class Graph {
         vertices--;
     }
 
+    private void removeVertexSafe(int vertex) {
+        for (int i = 0; i < vertices; i++) {
+            adjacencyMatrix[vertex][i] = 0;
+            adjacencyMatrix[i][vertex] = 0;
+        }
+        adjacencyList.remove(vertex);
+        for (List<Integer> neighbors : adjacencyList.values()) {
+            neighbors.remove(Integer.valueOf(vertex));
+        }
+    }
+
     public void convertMatrixToList() {
         for (int i = 0; i < vertices; i++) {
             adjacencyList.get(i).clear();
@@ -276,37 +287,40 @@ class Graph {
 
 
     //temat2
-    // GREEDY – klasyczny algorytm kolorowania
+    //GREEDY
     public Map<Integer, Integer> greedyColoring() {
-        Map<Integer, Integer> result = new HashMap<>();
-        for (int i = 0; i < vertices; i++) {
-            Set<Integer> usedColors = new HashSet<>();
-            for (int neighbor : adjacencyList.get(i)) {
-                if (result.containsKey(neighbor)) {
-                    usedColors.add(result.get(neighbor));
-                }
-            }
-            int color = 0;
-            while (usedColors.contains(color)) {
-                color++;
-            }
-            result.put(i, color);
-        }
-        return result;
+        List<Integer> vertexOrder = orderVertices();
+        return colorGraphInOrder(vertexOrder);
     }
 
-    // LF – Largest First (wierzchołki o największym stopniu najpierw)
+    //LF
     public Map<Integer, Integer> lfColoring() {
-        Map<Integer, Integer> result = new HashMap<>();
-        List<Integer> verticesOrder = new ArrayList<>();
-        for (int i = 0; i < vertices; i++) {
-            verticesOrder.add(i);
-        }
-        verticesOrder.sort((a, b) -> Integer.compare(adjacencyList.get(b).size(), adjacencyList.get(a).size()));
+        List<Integer> vertexOrder = orderVertices();
+        vertexOrder.sort((a, b) -> Integer.compare(adjacencyList.get(b).size(), adjacencyList.get(a).size()));
+        return colorGraphInOrder(vertexOrder);
+    }
 
-        for (int i : verticesOrder) {
+    //powolny SL bez kubełków
+    public Map<Integer, Integer> slowColoring() {
+        List<Integer> vertexOrder = slowOrderVertices();
+        return colorGraphInOrder(vertexOrder);
+    }
+
+
+    private List<Integer> orderVertices(){
+        List<Integer> vertexOrder = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            vertexOrder.add(i);
+        }
+        return vertexOrder;
+    }
+
+    private Map<Integer, Integer> colorGraphInOrder(List<Integer> vertexOrder) {
+        Map<Integer, Integer> result = new HashMap<>();
+
+        for (int vertex : vertexOrder) {
             Set<Integer> usedColors = new HashSet<>();
-            for (int neighbor : adjacencyList.get(i)) {
+            for (int neighbor : adjacencyList.get(vertex)) {
                 if (result.containsKey(neighbor)) {
                     usedColors.add(result.get(neighbor));
                 }
@@ -315,8 +329,9 @@ class Graph {
             while (usedColors.contains(color)) {
                 color++;
             }
-            result.put(i, color);
+            result.put(vertex, color);
         }
+
         return result;
     }
 
@@ -331,4 +346,33 @@ class Graph {
         return maxColor;
     }
 
+    public List<Integer> slowOrderVertices() {
+        Graph tempGraph = new Graph(vertices);
+        for (int i = 0; i < vertices; i++) {
+            for (int neighbor : adjacencyList.get(i)) {
+                if (i < neighbor) {
+                    tempGraph.addEdge(i, neighbor);
+                }
+            }
+        }
+        List<Integer> order = new LinkedList<>();
+
+        while (!tempGraph.adjacencyList.isEmpty()) {
+            int minDegreeVertex = -1;
+            int minDegree = Integer.MAX_VALUE;
+
+            for (int v : tempGraph.adjacencyList.keySet()) {
+                int degree = tempGraph.adjacencyList.get(v).size();
+                if (degree < minDegree) {
+                    minDegree = degree;
+                    minDegreeVertex = v;
+                }
+            }
+
+            order.add(0, minDegreeVertex);
+            tempGraph.removeVertexSafe(minDegreeVertex);
+        }
+
+        return order;
+    }
 }
