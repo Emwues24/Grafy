@@ -98,6 +98,32 @@ class Graph {
         }
     }
 
+    public static Graph generateRandomGraph(int vertices, int edges) {
+        if (edges > vertices * (vertices - 1) / 2) {
+            throw new IllegalArgumentException("Za dużo krawędzi dla tej liczby wierzchołków!");
+        }
+
+        Graph graph = new Graph(vertices);
+        Random random = new Random();
+        Set<String> existingEdges = new HashSet<>();
+
+        while (graph.getEdgeCount() < edges) {
+            int u = random.nextInt(vertices);
+            int v = random.nextInt(vertices);
+            if (u != v) {
+                String edge1 = u + "-" + v;
+                String edge2 = v + "-" + u;
+                if (!existingEdges.contains(edge1) && !existingEdges.contains(edge2)) {
+                    graph.addEdge(u, v);
+                    existingEdges.add(edge1);
+                    existingEdges.add(edge2);
+                }
+            }
+        }
+
+        return graph;
+    }
+
     public static Graph generateIntervalGraph(List<int[]> intervals) {
         int n = intervals.size();
         Graph graph = new Graph(n);
@@ -171,7 +197,7 @@ class Graph {
     }
 
     private static Graph decodeGraph6(String graph6) {
-        int index = 0;
+        int index;
         int n;
 
         if (graph6.charAt(0) == '~') {
@@ -211,6 +237,41 @@ class Graph {
         return graph;
     }
 
+    public static Graph loadFromDimacs(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        String line;
+        Graph graph = null;
+
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("c")) {
+                // skip dla komentarzy
+                continue;
+            }
+            if (line.startsWith("p")) {
+                // p edge <vertices> <edges> -- definicja grafu
+                String[] parts = line.split("\\s+");
+                int vertices = Integer.parseInt(parts[2]);
+                graph = new Graph(vertices);
+            } else if (line.startsWith("e")) {
+                // e <node1> <node2> -- krawedz
+                if (graph == null) {
+                    throw new IOException("Blad formatu");
+                }
+                String[] parts = line.split("\\s+");
+                int u = Integer.parseInt(parts[1]) - 1; // w pliku od 1
+                int v = Integer.parseInt(parts[2]) - 1;
+                graph.addEdge(u, v);
+            }
+        }
+        reader.close();
+
+        if (graph == null) {
+            throw new IOException("Blad formatu.");
+        }
+
+        return graph;
+    }
 
     public void printAdjacencyList() {
         for (int i = 0; i < vertices; i++) {

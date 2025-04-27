@@ -12,18 +12,60 @@ public class Main {
     public static void main(String[] args) throws IOException {
        // Temat1();
 
-        Graph g = loadFromGraph6("graphbig.txt");
-
-        Map<Integer, Integer> greedyColors = g.greedyColoring();
+        System.out.println("Random graph:");
+        Graph r = Graph.generateRandomGraph(500, 80000);
+        Map<Integer, Integer> greedyColors = r.greedyColoring();
         System.out.println("Greedy: " + greedyColors);
         System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
 
-        Map<Integer, Integer> lfColors = g.lfColoring();
+        Map<Integer, Integer> lfColors =r.lfColoring();
         System.out.println("LF: " + lfColors);
         System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
 
-        Map<Integer, Integer> slowColors = g.slowColoring();
-        System.out.println("SLow: " + lfColors);
+        Map<Integer, Integer> slowColors = r.slowColoring();
+        System.out.println("SLow: " + slowColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        System.out.println("Dimacs C2000.5:");
+        Graph d = Graph.loadFromDimacs("C2000.5.txt");
+        greedyColors = d.greedyColoring();
+        System.out.println("Greedy: " + greedyColors);
+        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
+
+        lfColors = d.lfColoring();
+        System.out.println("LF: " + lfColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        slowColors = d.slowColoring();
+        System.out.println("SLow: " + slowColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        System.out.println("Dimacs flat_76_0:");
+        d = Graph.loadFromDimacs("flat1000_76_0.txt");
+        greedyColors = d.greedyColoring();
+        System.out.println("Greedy: " + greedyColors);
+        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
+
+        lfColors = d.lfColoring();
+        System.out.println("LF: " + lfColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        slowColors = d.slowColoring();
+        System.out.println("SLow: " + slowColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        System.out.println("Dimacs r1000.5:");
+        d = Graph.loadFromDimacs("r1000.5.txt");
+        greedyColors = d.greedyColoring();
+        System.out.println("Greedy: " + greedyColors);
+        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
+
+        lfColors = d.lfColoring();
+        System.out.println("LF: " + lfColors);
+        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+
+        slowColors = d.slowColoring();
+        System.out.println("SLow: " + slowColors);
         System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
     }
 
