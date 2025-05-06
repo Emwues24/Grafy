@@ -367,6 +367,86 @@ class Graph {
         return colorGraphInOrder(vertexOrder);
     }
 
+    public Map<Integer, Integer> slColoring() {
+        int[] degree = new int[vertices];
+        for (int i = 0; i < vertices; i++) {
+            degree[i] = adjacencyList.get(i).size();
+        }
+
+        List<LinkedHashSet<Integer>> buckets = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            buckets.add(new LinkedHashSet<>());
+        }
+
+        for (int v = 0; v < vertices; v++) {
+            buckets.get(degree[v]).add(v);
+        }
+
+        boolean[] removed = new boolean[vertices];
+        List<Integer> order = new ArrayList<>();
+        Random rand = new Random();
+
+        for (int k = 0; k < vertices; k++) {
+            int d = 0;
+            while (d < buckets.size() && buckets.get(d).isEmpty()) {
+                d++;
+            }
+
+            LinkedHashSet<Integer> bucket = buckets.get(d);
+            int index = rand.nextInt(bucket.size());
+            int selected = bucket.stream().skip(index).findFirst().orElseThrow();
+            bucket.remove(selected);
+
+            removed[selected] = true;
+            order.add(selected);
+
+            for (int neighbor : adjacencyList.get(selected)) {
+                if (!removed[neighbor]) {
+                    int deg = degree[neighbor];
+                    buckets.get(deg).remove(neighbor);
+                    degree[neighbor]--;
+                    buckets.get(degree[neighbor]).add(neighbor);
+                }
+            }
+        }
+
+        Collections.reverse(order);
+        return colorGraphInOrder(order);
+    }
+
+    public Map<Integer, Integer> lfBucketColoring() {
+        List<LinkedHashSet<Integer>> buckets = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            buckets.add(new LinkedHashSet<>());
+        }
+
+        for (int v = 0; v < vertices; v++) {
+            int degree = adjacencyList.get(v).size();
+            buckets.get(degree).add(v);
+        }
+
+        boolean[] removed = new boolean[vertices];
+        List<Integer> order = new ArrayList<>();
+        Random rand = new Random();
+
+        for (int k = 0; k < vertices; k++) {
+            int d = buckets.size() - 1;
+            while (d >= 0 && buckets.get(d).isEmpty()) {
+                d--;
+            }
+
+            LinkedHashSet<Integer> bucket = buckets.get(d);
+            int index = rand.nextInt(bucket.size());
+            int selected = bucket.stream().skip(index).findFirst().orElseThrow();
+            bucket.remove(selected);
+
+            removed[selected] = true;
+            order.add(selected);
+        }
+
+        return colorGraphInOrder(order);
+    }
+
 
     private List<Integer> orderVertices(){
         List<Integer> vertexOrder = new ArrayList<>();

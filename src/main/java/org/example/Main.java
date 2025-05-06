@@ -1,9 +1,7 @@
 package org.example;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.example.Graph.*;
 
@@ -11,62 +9,99 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
        // Temat1();
-
-        System.out.println("Random graph:");
-        Graph r = Graph.generateRandomGraph(500, 80000);
-        Map<Integer, Integer> greedyColors = r.greedyColoring();
-        System.out.println("Greedy: " + greedyColors);
-        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
-
-        Map<Integer, Integer> lfColors =r.lfColoring();
-        System.out.println("LF: " + lfColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        Map<Integer, Integer> slowColors = r.slowColoring();
-        System.out.println("SLow: " + slowColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        System.out.println("Dimacs C2000.5:");
-        Graph d = Graph.loadFromDimacs("C2000.5.txt");
-        greedyColors = d.greedyColoring();
-        System.out.println("Greedy: " + greedyColors);
-        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
-
-        lfColors = d.lfColoring();
-        System.out.println("LF: " + lfColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        slowColors = d.slowColoring();
-        System.out.println("SLow: " + slowColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        System.out.println("Dimacs flat_76_0:");
-        d = Graph.loadFromDimacs("flat1000_76_0.txt");
-        greedyColors = d.greedyColoring();
-        System.out.println("Greedy: " + greedyColors);
-        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
-
-        lfColors = d.lfColoring();
-        System.out.println("LF: " + lfColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        slowColors = d.slowColoring();
-        System.out.println("SLow: " + slowColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        System.out.println("Dimacs r1000.5:");
-        d = Graph.loadFromDimacs("r1000.5.txt");
-        greedyColors = d.greedyColoring();
-        System.out.println("Greedy: " + greedyColors);
-        System.out.println("najwiekszy kolor: " + getMaxColor(greedyColors));
-
-        lfColors = d.lfColoring();
-        System.out.println("LF: " + lfColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
-
-        slowColors = d.slowColoring();
-        System.out.println("SLow: " + slowColors);
-        System.out.println("najwieksze kolor: " + getMaxColor(lfColors));
+//
+//        Graph r;
+//        ColoringStats stats;
+//
+//        System.out.println("Random graph v50e100");
+//        r = Graph.generateRandomGraph(50, 100);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v50e500");
+//        r = Graph.generateRandomGraph(50, 500);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v50e800");
+//        r = Graph.generateRandomGraph(50, 800);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v200e1600");
+//        r = Graph.generateRandomGraph(200, 1600);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v200e8000");
+//        r = Graph.generateRandomGraph(200, 8000);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v200e12800");
+//        r = Graph.generateRandomGraph(200, 12800);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v500e10000");
+//        r = Graph.generateRandomGraph(500, 10000);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v500e50000");
+//        r = Graph.generateRandomGraph(500, 50000);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Random graph v500e80000");
+//        r = Graph.generateRandomGraph(500, 80000);
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs C2000.5");
+//        r = Graph.loadFromDimacs("C2000.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjc250.5");
+//        r = Graph.loadFromDimacs("dsjc250.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjc500.5");
+//        r = Graph.loadFromDimacs("dsjc500.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjc1000.1");
+//        r = Graph.loadFromDimacs("dsjc1000.1.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjc1000.5");
+//        r = Graph.loadFromDimacs("dsjc1000.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjc1000.9");
+//        r = Graph.loadFromDimacs("dsjc1000.9.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs dsjr500.5");
+//        r = Graph.loadFromDimacs("dsjr500.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs flat1000_76_0");
+//        r = Graph.loadFromDimacs("flat1000_76_0.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
+//
+//        System.out.println("Dimacs r1000.5");
+//        r = Graph.loadFromDimacs("r1000.5.txt");
+//        stats = new ColoringStats(r);
+//        stats.runAll();
     }
 
     public static void Temat1() throws IOException {
