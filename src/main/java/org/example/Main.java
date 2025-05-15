@@ -9,99 +9,46 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
        // Temat1();
-//
-//        Graph r;
-//        ColoringStats stats;
-//
-//        System.out.println("Random graph v50e100");
-//        r = Graph.generateRandomGraph(50, 100);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v50e500");
-//        r = Graph.generateRandomGraph(50, 500);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v50e800");
-//        r = Graph.generateRandomGraph(50, 800);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v200e1600");
-//        r = Graph.generateRandomGraph(200, 1600);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v200e8000");
-//        r = Graph.generateRandomGraph(200, 8000);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v200e12800");
-//        r = Graph.generateRandomGraph(200, 12800);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v500e10000");
-//        r = Graph.generateRandomGraph(500, 10000);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v500e50000");
-//        r = Graph.generateRandomGraph(500, 50000);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Random graph v500e80000");
-//        r = Graph.generateRandomGraph(500, 80000);
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs C2000.5");
-//        r = Graph.loadFromDimacs("C2000.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjc250.5");
-//        r = Graph.loadFromDimacs("dsjc250.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjc500.5");
-//        r = Graph.loadFromDimacs("dsjc500.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjc1000.1");
-//        r = Graph.loadFromDimacs("dsjc1000.1.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjc1000.5");
-//        r = Graph.loadFromDimacs("dsjc1000.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjc1000.9");
-//        r = Graph.loadFromDimacs("dsjc1000.9.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs dsjr500.5");
-//        r = Graph.loadFromDimacs("dsjr500.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs flat1000_76_0");
-//        r = Graph.loadFromDimacs("flat1000_76_0.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
-//
-//        System.out.println("Dimacs r1000.5");
-//        r = Graph.loadFromDimacs("r1000.5.txt");
-//        stats = new ColoringStats(r);
-//        stats.runAll();
+        //Temat2();
+
+
+        System.out.println("Random graph v50e100");
+        Graph graph = Graph.generateRandomGraph(50, 100);
+        System.out.println("DFS rekurencyjny (macierz):");
+        graph.convertListToMatrix(); // Upewnij się, że masz aktualną macierz
+        boolean[] visitedMatrixRec = new boolean[50];
+        graph.dfsRecursiveMatrix(0, visitedMatrixRec); // start od wierzchołka 0
+
+        // 2. DFS rekurencyjny na LIŚCIE
+        System.out.println("\nDFS rekurencyjny (lista):");
+        graph.convertMatrixToList(); // Upewnij się, że masz aktualną listę
+        boolean[] visitedListRec = new boolean[50];
+        graph.dfsRecursiveList(0, visitedListRec); // start od wierzchołka 0
+
+        // 3. DFS iteracyjny na MACIERZY
+        System.out.println("\nDFS iteracyjny (macierz):");
+        graph.convertListToMatrix(); // odśwież reprezentację macierzową
+        graph.dfsIterativeMatrix(0);
+
+        // 4. DFS iteracyjny na LIŚCIE
+        System.out.println("\nDFS iteracyjny (lista):");
+        graph.convertMatrixToList(); // odśwież reprezentację listową
+        graph.dfsIterativeList(0);
+
+        System.out.println("Czy graf jest drzewem? " + graph.isTree());
+//        System.out.println("Cykl(e) w grafie:");
+//        graph.findAllCycles();
+
+        Graph g = new Graph(5);
+        g.addEdge(0, 1);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(1, 3);
+        g.addEdge(3, 4);
+
+        System.out.println("Czy graf jest drzewem? " + g.isTree());
+        System.out.println("Cykl(e) w grafie:");
+        g.findAllCycles();
     }
 
     public static void Temat1() throws IOException {
@@ -182,5 +129,100 @@ public class Main {
                 {0, 1, 1, 0}
         };
         System.out.println("Liczba cykli długości 3: " + count3Cycles(graph2));
+    }
+
+    public static void Temat2() throws IOException{
+        Graph r;
+        ColoringStats stats;
+
+        System.out.println("Random graph v50e100");
+        r = Graph.generateRandomGraph(50, 100);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v50e500");
+        r = Graph.generateRandomGraph(50, 500);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v50e800");
+        r = Graph.generateRandomGraph(50, 800);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v200e1600");
+        r = Graph.generateRandomGraph(200, 1600);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v200e8000");
+        r = Graph.generateRandomGraph(200, 8000);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v200e12800");
+        r = Graph.generateRandomGraph(200, 12800);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v500e10000");
+        r = Graph.generateRandomGraph(500, 10000);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v500e50000");
+        r = Graph.generateRandomGraph(500, 50000);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Random graph v500e80000");
+        r = Graph.generateRandomGraph(500, 80000);
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs C2000.5");
+        r = Graph.loadFromDimacs("C2000.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjc250.5");
+        r = Graph.loadFromDimacs("dsjc250.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjc500.5");
+        r = Graph.loadFromDimacs("dsjc500.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjc1000.1");
+        r = Graph.loadFromDimacs("dsjc1000.1.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjc1000.5");
+        r = Graph.loadFromDimacs("dsjc1000.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjc1000.9");
+        r = Graph.loadFromDimacs("dsjc1000.9.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs dsjr500.5");
+        r = Graph.loadFromDimacs("dsjr500.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs flat1000_76_0");
+        r = Graph.loadFromDimacs("flat1000_76_0.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
+
+        System.out.println("Dimacs r1000.5");
+        r = Graph.loadFromDimacs("r1000.5.txt");
+        stats = new ColoringStats(r);
+        stats.runAll();
     }
 }

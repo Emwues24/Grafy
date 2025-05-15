@@ -516,4 +516,147 @@ class Graph {
 
         return order;
     }
+
+
+
+    // 1.a Rekurencyjny DFS dla macierzy sąsiedztwa z nawracaniem
+    public void dfsRecursiveMatrix(int vertex, boolean[] visited) {
+        visited[vertex] = true;
+        System.out.println("Wejście: " + vertex);
+        for (int i = 0; i < vertices; i++) {
+            if (adjacencyMatrix[vertex][i] == 1 && !visited[i]) {
+                dfsRecursiveMatrix(i, visited);
+            }
+        }
+        System.out.println("Wyjście: " + vertex);
+    }
+
+    // 1.b Rekurencyjny DFS dla listy sąsiedztwa z nawracaniem
+    public void dfsRecursiveList(int vertex, boolean[] visited) {
+        visited[vertex] = true;
+        System.out.println("Wejście: " + vertex);
+        for (int neighbor : adjacencyList.get(vertex)) {
+            if (!visited[neighbor]) {
+                dfsRecursiveList(neighbor, visited);
+            }
+        }
+        System.out.println("Wyjście: " + vertex);
+    }
+
+    // 2.a Iteracyjny DFS dla macierzy sąsiedztwa
+    public void dfsIterativeMatrix(int start) {
+        boolean[] visited = new boolean[vertices];
+        Stack<Integer> stack = new Stack<>();
+        stack.push(start);
+
+        while (!stack.isEmpty()) {
+            int vertex = stack.pop();
+            if (!visited[vertex]) {
+                visited[vertex] = true;
+                System.out.println("Odwiedzony: " + vertex);
+                // Dodaj sąsiadów do stosu (w odwrotnej kolejności dla naturalnego porządku)
+                for (int i = vertices - 1; i >= 0; i--) {
+                    if (adjacencyMatrix[vertex][i] == 1 && !visited[i]) {
+                        stack.push(i);
+                    }
+                }
+            }
+        }
+    }
+
+    // 2.b Iteracyjny DFS dla listy sąsiedztwa
+    public void dfsIterativeList(int start) {
+        boolean[] visited = new boolean[vertices];
+        Stack<Integer> stack = new Stack<>();
+        stack.push(start);
+
+        while (!stack.isEmpty()) {
+            int vertex = stack.pop();
+            if (!visited[vertex]) {
+                visited[vertex] = true;
+                System.out.println("Odwiedzony: " + vertex);
+                List<Integer> neighbors = adjacencyList.get(vertex);
+                // Dodajemy sąsiadów w odwrotnej kolejności, aby DFS był w porządku naturalnym
+                for (int i = neighbors.size() - 1; i >= 0; i--) {
+                    int neighbor = neighbors.get(i);
+                    if (!visited[neighbor]) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isTree() {
+        boolean[] visited = new boolean[vertices];
+
+        // Sprawdzenie cyklu i spójności – zaczynamy DFS od wierzchołka 0
+        if (hasCycle(0, -1, visited)) {
+            return false; // ma cykl
+        }
+
+        // Sprawdzenie spójności: czy wszystkie wierzchołki zostały odwiedzone?
+        for (boolean v : visited) {
+            if (!v) return false; // graf niespójny
+        }
+
+        return true; // nie ma cyklu i jest spójny ⇒ drzewo
+    }
+
+    // Wersja DFS rekurencyjnego z detekcją cyklu
+    private boolean hasCycle(int v, int parent, boolean[] visited) {
+        visited[v] = true;
+
+        for (int neighbor : adjacencyList.get(v)) {
+            if (!visited[neighbor]) {
+                if (hasCycle(neighbor, v, visited)) return true;
+            } else if (neighbor != parent) {
+                return true; // znaleziono cykl
+            }
+        }
+
+        return false;
+    }
+
+    public void findAllCycles() {
+        boolean[] visited = new boolean[vertices];
+        List<Integer> path = new ArrayList<>();
+        Set<String> seenCycles = new HashSet<>();
+
+        for (int i = 0; i < vertices; i++) {
+            dfsFindCycles(i, -1, visited, path, seenCycles);
+            Arrays.fill(visited, false); // reset dla każdego wierzchołka startowego
+            path.clear();
+        }
+    }
+
+    private void dfsFindCycles(int current, int parent, boolean[] visited,
+                               List<Integer> path, Set<String> seenCycles) {
+        visited[current] = true;
+        path.add(current);
+
+        for (int neighbor : adjacencyList.get(current)) {
+            if (!visited[neighbor]) {
+                dfsFindCycles(neighbor, current, visited, path, seenCycles);
+            } else if (neighbor != parent && path.contains(neighbor)) {
+                // Cykl znaleziony
+                int idx = path.indexOf(neighbor);
+                List<Integer> cycle = new ArrayList<>(path.subList(idx, path.size()));
+                cycle.add(neighbor); // zamknięcie
+                String key = cycle.toString();
+
+                if (!seenCycles.contains(key)) {
+                    seenCycles.add(key);
+                    System.out.println("Znaleziony cykl: " + cycle);
+                }
+            }
+        }
+
+        path.remove(path.size() - 1);
+        visited[current] = false; // backtrack
+    }
+
+
+
+
 }
