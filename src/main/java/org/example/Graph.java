@@ -6,6 +6,7 @@ class Graph {
     private int[][] adjacencyMatrix;
     private Map<Integer, List<Integer>> adjacencyList;
     private int vertices;
+    private int time;
 
     public Graph(int vertices) {
         this.vertices = vertices;
@@ -621,40 +622,84 @@ class Graph {
     public void findAllCycles() {
         boolean[] visited = new boolean[vertices];
         List<Integer> path = new ArrayList<>();
-        Set<String> seenCycles = new HashSet<>();
+        Set<String> uniqueCycles = new HashSet<>();
 
         for (int i = 0; i < vertices; i++) {
-            dfsFindCycles(i, -1, visited, path, seenCycles);
-            Arrays.fill(visited, false); // reset dla każdego wierzchołka startowego
-            path.clear();
+            findCyclesUtil(i, i, visited, path, uniqueCycles);
+            visited[i] = true; // żeby nie zaczynać znowu od tych samych
+        }
+
+        for (String cycle : uniqueCycles) {
+            System.out.println("Cycle: " + cycle);
         }
     }
 
-    private void dfsFindCycles(int current, int parent, boolean[] visited,
-                               List<Integer> path, Set<String> seenCycles) {
-        visited[current] = true;
+    private void findCyclesUtil(int start, int current, boolean[] visited, List<Integer> path, Set<String> uniqueCycles) {
         path.add(current);
+        visited[current] = true;
 
         for (int neighbor : adjacencyList.get(current)) {
-            if (!visited[neighbor]) {
-                dfsFindCycles(neighbor, current, visited, path, seenCycles);
-            } else if (neighbor != parent && path.contains(neighbor)) {
-                // Cykl znaleziony
-                int idx = path.indexOf(neighbor);
-                List<Integer> cycle = new ArrayList<>(path.subList(idx, path.size()));
-                cycle.add(neighbor); // zamknięcie
-                String key = cycle.toString();
-
-                if (!seenCycles.contains(key)) {
-                    seenCycles.add(key);
-                    System.out.println("Znaleziony cykl: " + cycle);
-                }
+            if (neighbor == start && path.size() > 2) {
+                // cykl znaleziony
+                List<Integer> cycle = new ArrayList<>(path);
+                Collections.sort(cycle);
+                uniqueCycles.add(cycle.toString()); // używamy Set, żeby uniknąć duplikatów
+            } else if (!visited[neighbor]) {
+                findCyclesUtil(start, neighbor, visited, path, uniqueCycles);
             }
         }
 
         path.remove(path.size() - 1);
-        visited[current] = false; // backtrack
+        visited[current] = false;
     }
+
+    public void dfsWithIntervals(int start) {
+        boolean[] visited = new boolean[vertices];
+        int[][] times = new int[vertices][2]; // [i][0] = otwarcie, [i][1] = zamknięcie
+        time = 1;
+
+        dfsIntervalHelper(start, visited, times);
+
+        // Wyświetlenie wyników ASCII
+        printIntervals(times);
+    }
+
+    private void dfsIntervalHelper(int v, boolean[] visited, int[][] times) {
+        visited[v] = true;
+        times[v][0] = time++; // otwarcie
+
+        for (int neighbor : adjacencyList.get(v)) {
+            if (!visited[neighbor]) {
+                dfsIntervalHelper(neighbor, visited, times);
+            }
+        }
+
+        times[v][1] = time++; // zamknięcie
+    }
+
+    private void printIntervals(int[][] times) {
+        System.out.println("Przedziały otwarcia/zamknięcia wierzchołków:");
+        for (int i = 0; i < vertices; i++) {
+            System.out.printf("Wierzchołek %d: %d/%d\n", i, times[i][0], times[i][1]);
+        }
+
+        System.out.println("\nWizualizacja ASCII:");
+        for (int i = 0; i < vertices; i++) {
+            StringBuilder bar = new StringBuilder();
+            for (int j = 1; j <= time; j++) {
+                if (j >= times[i][0] && j <= times[i][1]) {
+                    bar.append("█");
+                } else {
+                    bar.append(" ");
+                }
+            }
+            System.out.printf("%d: %s (%d/%d)\n", i, bar.toString(), times[i][0], times[i][1]);
+        }
+    }
+
+
+
+
 
 
 

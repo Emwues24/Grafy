@@ -39,16 +39,21 @@ public class Main {
 //        System.out.println("Cykl(e) w grafie:");
 //        graph.findAllCycles();
 
+        //graph.dfsIterativeMatrixWithStackVisualization(0);
+        //graph.dfsLimitedDepthMatrix(0, 2); // DFS z ograniczeniem głębokości = 2
+
         Graph g = new Graph(5);
         g.addEdge(0, 1);
         g.addEdge(1, 2);
         g.addEdge(2, 0);
         g.addEdge(1, 3);
         g.addEdge(3, 4);
+        g.dfsWithIntervals(0);
 
-        System.out.println("Czy graf jest drzewem? " + g.isTree());
-        System.out.println("Cykl(e) w grafie:");
-        g.findAllCycles();
+//        System.out.println("Czy graf jest drzewem? " + g.isTree());
+//        System.out.println("Cykl(e) w grafie:");
+//        g.findAllCycles();
+
     }
 
     public static void Temat1() throws IOException {
