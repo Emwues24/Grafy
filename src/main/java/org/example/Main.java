@@ -39,7 +39,7 @@ public class Main {
 //        System.out.println("Cykl(e) w grafie:");
 //        graph.findAllCycles();
 
-        //graph.dfsIterativeMatrixWithStackVisualization(0);
+        graph.dfsIterativeMatrixWithStackVisualization(0);
         //graph.dfsLimitedDepthMatrix(0, 2); // DFS z ograniczeniem głębokości = 2
 
         Graph g = new Graph(5);

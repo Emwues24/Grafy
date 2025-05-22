@@ -697,11 +697,31 @@ class Graph {
         }
     }
 
+    public void dfsIterativeMatrixWithStackVisualization(int start) {
+        boolean[] visited = new boolean[vertices];
+        Stack<Integer> stack = new Stack<>();
+        stack.push(start);
 
+        while (!stack.isEmpty()) {
+            printStack(stack); // <<< ASCII wizualizacja
+            int vertex = stack.pop();
+            if (!visited[vertex]) {
+                visited[vertex] = true;
+                System.out.println("Odwiedzony: " + vertex);
+                for (int i = vertices - 1; i >= 0; i--) {
+                    if (adjacencyMatrix[vertex][i] == 1 && !visited[i]) {
+                        stack.push(i);
+                    }
+                }
+            }
+        }
+    }
 
-
-
-
-
-
+    private void printStack(Stack<Integer> stack) {
+        System.out.println("Stos:");
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            System.out.print("| " + stack.get(i) + " |");
+        }
+        System.out.println("-----");
+    }
 }
